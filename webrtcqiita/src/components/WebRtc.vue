@@ -71,7 +71,7 @@ export default {
         this.pc.addTrack(track, this.localStream);
       });
 
-      // Pull tracks from remote stream, add to video stream
+      // 通信相手のtracksを取得してremote streamにセット
       this.pc.ontrack = (event) => {
         console.log(event)
         event.streams[0].getTracks().forEach((track) => {
@@ -83,17 +83,17 @@ export default {
       this.remoteVideo.srcObject = this.remoteStream;
     },
     async createCall() {
-      // Reference Firestore collections for signaling
+      // Firestoreのcallsコレクションにドキュメントを新規追加
       const callDoc = this.db.collection("calls").doc();
       const offerCandidates = callDoc.collection("offerCandidates");
       const answerCandidates = callDoc.collection("answerCandidates");
 
-      // Get candidates for caller, save to db
+      // Candidateを取得
       this.pc.onicecandidate = (event) => {
         event.candidate && offerCandidates.add(event.candidate.toJSON());
       };
 
-      // Create offer
+      // offerの作成
       const offerDescription = await this.pc.createOffer();
       await this.pc.setLocalDescription(offerDescription);
 
@@ -102,10 +102,11 @@ export default {
         type: offerDescription.type,
       };
 
+      // Firebaseに追加
       await callDoc.set({offer});
       await callDoc.update({ name: this.$route.query.name });
 
-      // Listen for remote answer
+      // Remote answerを読み込み
       callDoc.onSnapshot((snapshot) => {
         const data = snapshot.data();
         if (!this.pc.currentRemoteDescription && data?.answer) {
@@ -114,7 +115,7 @@ export default {
         }
       });
 
-      // When answered, add candidate to peer connection
+      // answerに要素が追加された時読み込みFirebaseに追加
       answerCandidates.onSnapshot((snapshot) => {
         snapshot.docChanges().forEach((change) => {
           if (change.type === "added") {

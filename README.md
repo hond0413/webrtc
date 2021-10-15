@@ -10,8 +10,6 @@ https://webrtcqiita.web.app/
 * Vue: 2.6.11
 * Firebase: 8.1.1
 
-## 
-
 ### Project setup
 ```
 $ git clone git@github.com:hond0413/webrtc.git

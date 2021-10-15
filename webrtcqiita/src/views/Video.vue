@@ -1,15 +1,15 @@
 <template>
   <div>
-    <WebRtc></WebRtc>
+    <WebRTC></WebRTC>
   </div>
 </template>
 
 <script>
-import WebRtc from '../components/WebRtc'
+import WebRTC from '../components/WebRTC'
 
 export default {
     components: {
-        WebRtc
+        WebRTC
     }
 }
 </script>
